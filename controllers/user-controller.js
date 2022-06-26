@@ -14,19 +14,19 @@ const userController = {
             })
     },
     getSingleUser({ params }, res) {
-        User.findOne({ _id: params.id})
-        .select('-__v')
-        .then(dbUserData => {
-            if (!dbUserData) {
-                res.status(400).json({ message: 'No user with that id' })
-                return;
-            }
-            res.json(dbUserData)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err)
-        })
+        User.findOne({ _id: params.id })
+            .select('-__v')
+            .then(dbUserData => {
+                if (!dbUserData) {
+                    res.status(404).json({ message: 'No user with that id' })
+                    return;
+                }
+                res.json(dbUserData)
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json(err)
+            })
     },
     createUser({ body }, res) {
         User.create(body)
@@ -37,8 +37,24 @@ const userController = {
                 console.log(err);
                 res.status(400).json(err)
             });
+    },
+    deleteUser({ params }, res) {
+        User.findOneAndDelete({ _id: params.id })
+            .then(dbUserData => {
+                if (!dbUserData) {
+                    res.status(404).json({ message: 'No user found with this id' });
+                    return;
+                }
+                res.json({
+                    data: dbUserData,
+                    message: 'User deleted'
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(500).json(err);
+            })
     }
-
 }
 
 module.exports = userController;

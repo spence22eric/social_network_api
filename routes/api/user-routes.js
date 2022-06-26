@@ -2,16 +2,17 @@ const router = require('express').Router();
 const {
     getAllUsers,
     createUser,
-    getSingleUser
+    getSingleUser,
+    deleteUser
 } = require('../../controllers/user-controller');
 
 // /api/users
 router.route('/')
     .get(getAllUsers)
-    .post(createUser)
-
+    .post(createUser);
 
 router.route('/:id')
     .get(getSingleUser)
+    .delete(deleteUser)
 
 module.exports = router;
