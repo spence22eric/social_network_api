@@ -87,7 +87,7 @@ const thoughtController = {
                 );
             })
             .then(dbUserData => {
-                if (!dbUserData) {                                    
+                if (!dbUserData) {                                   
                     return;
                 }
                 res.json({ message: 'Thought deleted' });
