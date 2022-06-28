@@ -11,7 +11,21 @@ const thoughtController = {
             })
             .catch(err => {
                 console.log(err);
-                res.status(500).json(err)
+                res.status(500).json(err);
+            });
+    },
+    // get single thought
+    getSingleThought({ params }, res) {
+        Thought.findOne({ _id: params.id })
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
+                    res.status(404).json({ message: 'No thought found with this id' })
+                }
+                res.json(dbThoughtData);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json(err);
             });
     },
     // create thought
@@ -27,8 +41,9 @@ const thoughtController = {
             .then(dbUserData => {
                 if (!dbUserData) {
                     res.status(400).json({
-                        message: 'Thought created, but no user found with specified id'
-                    })
+                        message: 'Thought created but no user found with specified id'
+                    });
+                    return;
                 }
                 res.json({ message: 'Thought created' })
             })
@@ -36,6 +51,24 @@ const thoughtController = {
                 console.log(err);
                 res.status(500).json(err);
             });
+    },
+    updateThought({ body, params }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.id },
+            { $set: body},
+            { runValidators: true, new: true }
+        )
+        .then(dbThoughtData => {
+            if (!dbThoughtData) {
+                res.status(404).json({ message: 'No thought found with this id' });
+                return;
+            }
+            res.json(dbThoughtData);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
     }
 }
 
