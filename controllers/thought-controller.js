@@ -19,7 +19,8 @@ const thoughtController = {
         Thought.findOne({ _id: params.id })
             .then(dbThoughtData => {
                 if (!dbThoughtData) {
-                    res.status(404).json({ message: 'No thought found with this id' })
+                    res.status(404).json({ message: 'No thought found with this id' });
+                    return;
                 }
                 res.json(dbThoughtData);
             })
@@ -52,23 +53,48 @@ const thoughtController = {
                 res.status(500).json(err);
             });
     },
+    // update thought
     updateThought({ body, params }, res) {
         Thought.findOneAndUpdate(
             { _id: params.id },
-            { $set: body},
+            { $set: body },
             { runValidators: true, new: true }
         )
-        .then(dbThoughtData => {
-            if (!dbThoughtData) {
-                res.status(404).json({ message: 'No thought found with this id' });
-                return;
-            }
-            res.json(dbThoughtData);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
+                    res.status(404).json({ message: 'No thought found with this id' });
+                    return;
+                }
+                res.json(dbThoughtData);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+    // delete thought
+    deleteThought({ params }, res) {
+        Thought.findOneAndDelete({ _id: params.id })
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {                    
+                    res.status(404).json({ message: 'No thought found with this id' });
+                    return;
+                }
+                return User.findOneAndUpdate(
+                    { thoughts: params.id },
+                    { $pull: { thoughts: params.id } },
+                    { new: true }
+                );
+            })
+            .then(dbUserData => {
+                if (!dbUserData) {                                    
+                    return;
+                }
+                res.json({ message: 'Thought deleted' });
+            })
+            .catch(err => {                
+                res.status(500).json(err);                
+            });
     }
 }
 
